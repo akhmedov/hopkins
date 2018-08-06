@@ -140,7 +140,6 @@ def plot (dataset, vt_max = None):
 
 ### MAIN ###
 
-
 ds = Dataset('dataset.json')
 print("Length: ", ds.length())
 print("Sparks: ", ds.sparks())

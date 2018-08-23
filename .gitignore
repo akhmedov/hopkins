@@ -1,0 +1,7 @@
+# All dot files exept .gitignore
+/**/.*
+!/.gitignore
+
+# Temporary Files
+/**/~$*
+__pycache__

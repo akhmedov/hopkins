@@ -14,9 +14,9 @@ import json as js
 class Dataset:
 
 	# internal variables
-	base = 4
-	series = 0
-	sparks_num = 0
+	base = None
+	series = None
+	sparks_num = None
 
 	# read dataset in json format
 	def __init__ (self, path):
@@ -193,6 +193,20 @@ def check_balance (Y):
 	for y in Y: res += y
 	return res / len(Y)
 
+def make_balance (X,Y):
+	ty = 'float32'
+	newX = np.array([X[0].tolist()]).astype(ty)
+	newY = np.array([Y[0].tolist()]).astype(ty)
+	for i in range(1,len(Y)):
+		balance = check_balance(newY)
+		min_idx = balance.argmin()
+		max_idx = balance.argmax()
+		balanced = abs(balance[max_idx] - balance[min_idx]) < 0.1
+		if balanced or (Y[i][max_idx] < 0.1 and not balanced):
+			newY = np.append(newY, [Y[i]], axis=0)
+			newX = np.append(newX, [X[i]], axis=0)
+	return newX, newY
+
 ### MAIN ###
 
 # ds = Dataset('dataset.json')
@@ -203,7 +217,3 @@ def check_balance (Y):
 # print("Sparks: ", ds.sparks())
 # print("Sequence: ", ds.code())
 # plot(ds,20)
-# X, Y = ds.split(window_length=ds.max_pulse_wides(), step=50)
-# print("Number of frames: ", len(Y))
-# print("Length of train dataset: ", len(Y[:int(9*len(Y)/10)]))
-# print("Length of test dataset:  ", len(Y[int(9*len(Y)/10):]))

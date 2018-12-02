@@ -10,6 +10,7 @@ from __future__ import print_function
 import matplotlib.pyplot as plt
 import numpy as np
 import json as js
+import sys
 
 class Dataset:
 
@@ -194,9 +195,8 @@ def check_balance (Y):
 	return res / len(Y)
 
 def make_balance (X,Y):
-	ty = 'float32'
-	newX = np.array([X[0].tolist()]).astype(ty)
-	newY = np.array([Y[0].tolist()]).astype(ty)
+	newX = np.array([X[0].tolist()]).astype('float32')
+	newY = np.array([Y[0].tolist()]).astype('float32')
 	for i in range(1,len(Y)):
 		balance = check_balance(newY)
 		min_idx = balance.argmin()
@@ -209,11 +209,12 @@ def make_balance (X,Y):
 
 ### MAIN ###
 
-# ds = Dataset('dataset.json')
-# ds.norm_amplitude()
-# print("Min wides: ", ds.min_pulse_wides())
-# print("Max wides: ", ds.max_pulse_wides())
-# print("Length: ", ds.length())
-# print("Sparks: ", ds.sparks())
-# print("Sequence: ", ds.code())
-# plot(ds,20)
+if len(sys.argv) > 1:
+	ds = Dataset(sys.argv[1])
+	ds.norm_amplitude()
+	print("Min wides: ", ds.min_pulse_wides())
+	print("Max wides: ", ds.max_pulse_wides())
+	print("Length: ", ds.length())
+	print("Sparks: ", ds.sparks())
+	print("Sequence: ", ds.code())
+	plot(ds,20)

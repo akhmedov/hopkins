@@ -30,7 +30,7 @@ x_train = np.array(X[:int(9*len(X)/10)]).astype('float32')
 y_train = np.array(Y[:int(9*len(Y)/10)]).astype('float32')
 x_test  = np.array(X[int(9*len(X)/10):]).astype('float32')
 y_test  = np.array(Y[int(9*len(Y)/10):]).astype('float32')
-# x_train, y_train = make_balance(x_train, y_train)
+x_test, y_test = make_balance(x_test, y_test)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
@@ -54,16 +54,6 @@ history = model.fit(x_train, y_train,
 					validation_data=(x_test, y_test))
 
 model.summary()
-score = model.evaluate(x_test, y_test, batch_size=batch_size, verbose=1)
+score = model.evaluate(x_test, y_test, batch_size=batch_size, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
-
-# x_input = np.zeros((1, 100))
-# x_input[0, :] =  x[t+i: t+i+101]
-# for i in range(10)
-# 	y_output = model.predict(x_input)
-# 	print(y_output)
-# 	x_input[0, 0:100] =  x[t+i+1: t+i+100]
-# 	x_input[100] = y_output
-
-

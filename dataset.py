@@ -189,10 +189,7 @@ def plot (dataset, vt_max = None):
 	plt.show()
 
 def check_balance (Y):
-	radix = len(Y[0])
-	res = [0] * radix
-	for y in Y: res += y
-	return res / len(Y)
+	return sum(Y) / len(Y)
 
 def make_balance (X,Y):
 	newX = np.array([X[0].tolist()]).astype('float32')

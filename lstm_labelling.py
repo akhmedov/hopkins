@@ -6,8 +6,8 @@
 #  Copyright © 2018 Rolan Akhmedov. All rights reserved.
 #
 
-import numpy as np
 import gc
+import numpy as np
 
 from dataset import Dataset, plot
 from dataset import check_balance, make_balance
@@ -18,13 +18,13 @@ from keras.layers import Dense, Dropout, Activation, Embedding
 from keras.layers import LSTM, SpatialDropout1D
 from keras.layers import TimeDistributed
 
-# load train and test data
+BATCH_SIZE = 1
+
 ds = Dataset('test.json')
 ds.norm_amplitude()
 window_size = ds.max_pulse_wides()
 X, Y = ds.split(window_length=window_size, step=1)
 
-# prepare data for learning in keras one-to-one lstm model
 for y in Y: y[0] = 0 if sum(y) > 1 else 1
 x_train = np.array(X[:int(9*len(X)/10)]).astype('float32')
 y_train = np.array(Y[:int(9*len(Y)/10)]).astype('float32')
@@ -42,18 +42,17 @@ print('Test: {} - size, {} - balance'.format(len(y_test), check_balance(y_test))
 print('_________________________________________________________________')
 gc.collect()
 
-batch_size = 1
 model = Sequential()
-model.add(LSTM(window_size, batch_input_shape=(batch_size, window_size, 1), stateful=True))
+model.add(LSTM(window_size, batch_input_shape=(BATCH_SIZE, window_size, 1), stateful=True))
 model.add(Dropout(0.5))
 model.add(Dense(3,activation='softmax'))
 model.compile(loss='mean_squared_error', optimizer='rmsprop', metrics=['accuracy'])
 
 history = model.fit(x_train, y_train,
-					batch_size=batch_size, epochs=1, verbose=1,
+					batch_size=BATCH_SIZE, epochs=1, verbose=1,
 					validation_data=(x_test, y_test))
 
 model.summary()
-score = model.evaluate(x_test, y_test, batch_size=batch_size, verbose=0)
+score = model.evaluate(x_test, y_test, batch_size=BATCH_SIZE, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])

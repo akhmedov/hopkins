@@ -164,10 +164,6 @@ def color (char_id):
 		4 : 'yellow'
 	}[char_id]
 
-
-def plot (X, Y, vt_max = None):
-	return
-
 def plot (dataset, vt_max = None):
 	plt.figure()
 	if vt_max: plt.xlim(0, vt_max)

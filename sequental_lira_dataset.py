@@ -24,6 +24,11 @@ import matplotlib.pyplot as plot
 class Dataset:
 
     @staticmethod
+    def class_labels(filename):
+        file = open(filename)
+        return json.load(file)['class_label']
+
+    @staticmethod
     def check_balance(filename):
         file = open(filename)
         dataset = json.load(file)
@@ -42,7 +47,6 @@ class Dataset:
         plot.ylabel('Discretization rate')
         plot.show()
 
-
     @staticmethod
     def snr_statistic(filename):
         file = open(filename)
@@ -51,11 +55,19 @@ class Dataset:
         snr = [item['annotation']['SNR'] for item in dataset['dataset']
                if item['annotation']['SNR'] and item['annotation']['signal_id'] != 2]
 
-        plot.hist(snr, bins=30)
-        plot.ylabel('Probability')
+        # plot.grid(color='lightgrey', linestyle='--', linewidth=1)
+        plot.ylabel('N')
+        plot.xlabel('SNR')
+        plot.hist(snr, bins='auto')
         plot.show()
 
         return min(snr), sum(snr)/len(snr), max(snr)
+
+    @staticmethod
+    def get_snr(filename):
+        file = open(filename)
+        dataset = json.load(file)['dataset']
+        return np.array([item['annotation']['SNR'] for item in dataset])
 
     @staticmethod
     def sequence_to_label(filename):
@@ -86,18 +98,18 @@ class Dataset:
 
 
 def main():
-    X, Y = Dataset.sequence_to_sequence('lira.json')
-    print('Class balance: ', Dataset.check_balance('lira.json'))
-    Dataset.snr_statistic('lira.json')
-    # Dataset.check_discret_rate('lira.json')
+    X, Y = Dataset.sequence_to_sequence('lira_sequental_dataset.json')
+    # print('Class balance: ', Dataset.check_balance('lira_sequental_dataset.json'))
+    Dataset.snr_statistic('lira_sequental_dataset.json')
+    # Dataset.check_discret_rate('lira_sequental_dataset.json')
 
-    for data, output in zip(X[:20], Y[:20]):
-        plot.plot(data, label='Ex')
-        plot.plot([50 * f for f in output[1]], label='S1')
-        plot.plot([50 * f for f in output[2]], label='S2')
-        plot.plot([50 * f for f in output[3]], label='S3')
-        plot.legend()
-        plot.show()
+    # for data, output in zip(X[:20], Y[:20]):
+    #     plot.plot(data, label='Ex')
+    #     plot.plot([50 * f for f in output[1]], label='S1')
+    #     plot.plot([50 * f for f in output[2]], label='S2')
+    #     plot.plot([50 * f for f in output[3]], label='S3')
+    #     plot.legend()
+    #     plot.show()
 
 
 if __name__ == '__main__':

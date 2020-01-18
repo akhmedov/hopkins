@@ -59,23 +59,46 @@ def average_error(model, X, Y):
     return 100 * error
 
 
-def main(model_file='lstm_sequence_to_label.h5'):
+def get_wrong_cases(model, X, Y, snr):
+    predict = model.predict_classes(X, verbose=True)
+    Y = np.array([np.argmax(y) for y in Y])
+    mask = np.bitwise_not(np.isclose(predict, Y))
+    X, Y, predict, snr = X[mask], Y[mask], predict[mask], snr[mask]
+    mask = np.bitwise_not(Y == 1)
+    X, Y, predict, snr = X[mask], Y[mask], predict[mask], snr[mask]
+    # mask = np.max(X) < 20
+    # X, Y, predict = X[mask], Y[mask], predict[mask]
+    return X, Y, predict, snr
+
+
+def main(model_file='lstm_sequence_to_label.h5', dataset_file='lira_sequental_dataset.json'):
 
     if not os.path.exists(model_file):
         history = train_model(save_path=model_file)
         plot_train_hist(history)
 
-    X, Y = Dataset.sequence_to_label('lira_sequental_dataset.json')
+    X, Y = Dataset.sequence_to_label(dataset_file)
     X = np.expand_dims(X, axis=2)
 
     random_model = model_arch(X.shape[2], Y.shape[1], X.shape[1])
-    random_model_error = average_error(random_model, X, Y)
-
     trained_model = keras.models.load_model(model_file)
-    trained_model_error = average_error(trained_model, X, Y)
 
-    print("Average error of random model on test dataset: {} %".format(random_model_error))
-    print("Average error of trained model on test dataset: {} %".format(trained_model_error))
+    # random_model_error = average_error(random_model, X, Y)
+    # trained_model_error = average_error(trained_model, X, Y)
+    #
+    # print("Average error of random model on test dataset: {} %".format(random_model_error))
+    # print("Average error of trained model on test dataset: {} %".format(trained_model_error))
+
+    snr = Dataset.get_snr(dataset_file)
+    labels = Dataset.class_labels(dataset_file)
+    X, Y, predict, SNR = get_wrong_cases(trained_model, X, Y, snr)
+    for y_true, y_false, x, snr in zip(Y, predict, X, SNR):
+        text = 'Prediction: ' + labels[y_false] + '; Expert: ' + labels[y_true] + '; SNR = ' + str(snr)
+        plot.plot(x, color='black', linestyle='-')
+        plot.title(text)
+        plot.ylabel('Ex')
+        plot.grid(color='lightgrey', linestyle='--', linewidth=1)
+        plot.show()
 
     # score = model.evaluate(X, Y, verbose=True)
     # print('Test loss:', score[0])

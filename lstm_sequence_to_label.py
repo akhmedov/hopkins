@@ -7,6 +7,7 @@ import matplotlib.ticker as ticker
 
 # keras.layers.TimeDistributed
 # keras.layers.SpatialDropout1D
+# keras.layers.LSTM(..., activation='', inner_activation='', ...)
 
 
 def model_arch(input_dim, output_dim, look_back):
@@ -20,8 +21,8 @@ def model_arch(input_dim, output_dim, look_back):
     return model
 
 
-def train_model(num_epoch=150, batch_size=50, save_path='lstm_sequence_to_label.h5'):
-    X, Y = Dataset.sequence_to_label('lira_sequental_dataset.json')
+def train_model(save_path, dataset_path, num_epoch=150, batch_size=50):
+    X, Y = Dataset.sequence_to_label(dataset_path)
     X = np.expand_dims(X, axis=2)
     x_train = X[:9 * X.shape[0] // 10]
     y_train = Y[:9 * X.shape[0] // 10]
@@ -74,7 +75,7 @@ def get_wrong_cases(model, X, Y, snr):
 def main(model_file='lstm_sequence_to_label.h5', dataset_file='lira_sequental_dataset.json'):
 
     if not os.path.exists(model_file):
-        history = train_model(save_path=model_file)
+        history = train_model(save_path=model_file, dataset_path=dataset_file)
         plot_train_hist(history)
 
     X, Y = Dataset.sequence_to_label(dataset_file)
